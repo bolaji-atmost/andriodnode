@@ -1,0 +1,55 @@
+#cloud-config
+groups:
+  - ubuntu: [root,sys]
+  - hashicorp
+  # - docker: [sudo]
+
+# Add users to the system. Users are added after groups are added.
+users:
+  - default
+  - name: ubuntu
+    gecos: ubuntu
+    shell: /bin/bash
+    primary_group: ubuntu
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: sudo,docker
+package_upgrade: true
+packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg-agent
+  - software-properties-common
+  - docker-compose
+  - openjdk-17-jdk
+  - git
+  - ruby-full
+  - libssl-dev
+  - libreadline-dev
+  - zlib1g-dev
+  - libsqlite3-dev
+  - libffi-dev
+
+runcmd:
+  # Step 1: Install rbenv and ruby-build
+  - su - ubuntu -c 'git clone https://github.com/rbenv/rbenv.git ~/.rbenv'
+  - su - ubuntu -c 'echo \'export PATH="$HOME/.rbenv/bin:$PATH"\' >> ~/.bashrc'
+  - su - ubuntu -c 'echo \'eval "$(rbenv init -)"\' >> ~/.bashrc'
+  - su - ubuntu -c 'git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build'
+  - su - ubuntu -c 'source ~/.bashrc && ~/.rbenv/bin/rbenv install 3.3.0'  # Install Ruby 3.3.0
+  - su - ubuntu -c 'source ~/.bashrc && ~/.rbenv/bin/rbenv global 3.3.0'  # Set Ruby 3.3.0 as the default version
+  
+  # Step 2: Install Bundler
+  - su - ubuntu -c 'source ~/.bashrc && gem install bundler'
+  
+  # Step 3: Install Fastlane
+  - su - ubuntu -c 'source ~/.bashrc && gem install fastlane'
+  
+  # Step 4: Verify installations
+  - su - ubuntu -c 'source ~/.bashrc && ruby -v'
+  - su - ubuntu -c 'source ~/.bashrc && bundler -v'
+  - su - ubuntu -c 'source ~/.bashrc && fastlane -v'
+  - sudo usermod -aG docker ubuntu
