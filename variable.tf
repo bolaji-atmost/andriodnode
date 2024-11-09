@@ -18,6 +18,6 @@ variable "ubuntu" {
 variable "node_name" {
   type = map(string)
   default = {
-    chatwoot = "kg_chatwoot_node"
+    andriod = "andriod_node"
   }
 }
